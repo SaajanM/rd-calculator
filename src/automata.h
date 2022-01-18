@@ -169,11 +169,11 @@ public:
 #define FSM_TRANSITIONS(code)                                                                     \
   class FSM_automaton : public automata<FSM_States, FSM_States::META_COUNT>                       \
   {                                                                                               \
-  protected:                                                                                        \
+  protected:                                                                                      \
     void populateTTable(){                                                                        \
         code};                                                                                    \
                                                                                                   \
-  public:                                                                                           \
+  public:                                                                                         \
     FSM_automaton() : automata(ALPHABET, START_STATE, ACCEPT_NAMED_STATES) { populateTTable(); }; \
   };
 
