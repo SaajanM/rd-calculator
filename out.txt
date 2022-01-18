@@ -1,0 +1,7 @@
+SUB, -
+MUL, *
+DIV, /
+NUM, 56
+NUM, 87
+ADD, +
+NUM, 7
