@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <string_view>
 
 using namespace std;
 
@@ -160,7 +161,19 @@ public:
   META_COUNT                            \
 };
 
-#define FSM_ALPHABET(...) constexpr char ALPHABET[] = {__VA_ARGS__};
+template <size_t N>
+struct ALPH{
+  constexpr ALPH(const char (&alph)[N]):letters(){
+    string_view alphV = alph;
+    for(size_t i=0; i < N-1; i++){
+      letters[i] = *(alphV.data()+i);
+    }
+  };
+  char letters[N-1];
+  constexpr static size_t size = N-1;
+};
+
+#define FSM_ALPHABET(...) constexpr ALPH ALPHABET(__VA_ARGS__);
 
 #define FSM_START_STATE(STATE) constexpr FSM_States START_STATE = STATE;
 
@@ -174,7 +187,7 @@ public:
         code};                                                                                    \
                                                                                                   \
   public:                                                                                         \
-    FSM_automaton() : automata(ALPHABET, START_STATE, ACCEPT_NAMED_STATES) { populateTTable(); }; \
+    FSM_automaton() : automata(ALPHABET.letters, START_STATE, ACCEPT_NAMED_STATES) { populateTTable(); }; \
   };
 
 #endif
