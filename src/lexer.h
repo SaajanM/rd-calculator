@@ -70,7 +70,7 @@ class lexer
       }
       catch (typename automata<STATES, STATE_COUNT>::no_transition &e)
       {
-        if (!hasLastLabeled) throw invalid_argument("Can't read input");
+        if (!hasLastLabeled) throw invalid_argument("Syntax error");
         current = lastLabeled + 1;
         assignToken(begin, current);
         begin = current;
@@ -98,11 +98,7 @@ class lexer
   }
 
   void processString(string input){
-    try{
       lexInput(input);
-    }catch(typename automata<STATES,STATE_COUNT>::char_not_in_lang &e){
-      cout << e.what() << endl;
-    }
   }
 
   lex_pair getToken(){
@@ -114,10 +110,14 @@ class lexer
   }
 
   lex_pair peek(){
-    if(lexerPos == lexicon.size()-1){
+    return peek(1);
+  }
+
+  lex_pair peek(int n){
+    if(lexerPos+n >= lexicon.size()){
       return (lex_pair){"EOF",""};
     }else{
-      return (lexicon.at(lexerPos+1));
+      return (lexicon.at(lexerPos+n));
     }
   }
 };

@@ -160,9 +160,9 @@ public:
   META_COUNT                            \
 };
 
-#define FSM_ALPHABET(...) const char ALPHABET[] = {__VA_ARGS__};
+#define FSM_ALPHABET(...) constexpr char ALPHABET[] = {__VA_ARGS__};
 
-#define FSM_START_STATE(STATE) const FSM_States START_STATE = STATE;
+#define FSM_START_STATE(STATE) constexpr FSM_States START_STATE = STATE;
 
 #define FSM_ACCEPT_STATES(...) const pair<FSM_States, string> ACCEPT_NAMED_STATES[] = {__VA_ARGS__};
 
