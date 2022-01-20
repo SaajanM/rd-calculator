@@ -16,7 +16,7 @@ int main(int argc, char const *argv[])
   l.processString(t);
 
   while(l.peek().token!="EOF"){
-    cout << l.peek().token << ", " << l.getToken().contents << endl;
+    cout << l.peek().token << ", " << l.getToken().lexeme << endl;
   }
 
   return 0;

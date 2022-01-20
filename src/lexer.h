@@ -9,7 +9,7 @@
 struct lex_pair
 {
   string token;
-  string contents;
+  string lexeme;
 };
 
 template <typename STATES, int STATE_COUNT>
@@ -28,8 +28,8 @@ class lexer
   {
     STATES currentState = fsm->getCurrent();
     string foundMapping = tokenMap.at(currentState);
-    lex_pair lexeme = {foundMapping, string(begin, end)};
-    lexicon.push_back(lexeme);
+    lex_pair tok = {foundMapping, string(begin, end)};
+    lexicon.push_back(tok);
   }
 
   void lexInput(string in)
