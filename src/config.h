@@ -6,32 +6,13 @@
 
 using namespace std;
 
-FSM_STATES(
-    START,
-    LPAREN,
-    RPAREN,
-    MUL,
-    DIV,
-    ADD,
-    SUB,
-    NUM,
-    XOR,
-    OR,
-    AND,
-    NOT,
-    LT,
-    GT,
-    LSHIFT,
-    RSHIFT)
+FSM_STATES(START, LPAREN, RPAREN, MUL, DIV, ADD, SUB, NUM, XOR, OR, AND, NOT, LT, GT, LSHIFT, RSHIFT)
 
 FSM_ALPHABET("*/+-0123456789()^|&!<>");
 
 FSM_START_STATE(START)
 
-FSM_ACCEPT_STATES(
-  {LPAREN, "LPAREN"}, {RPAREN, "RPAREN"}, {MUL, "MUL"}, {DIV, "DIV"}, {ADD, "ADD"}, {SUB, "SUB"}, {NUM, "NUM"}, {XOR, "XOR"},
-  {OR, "OR"}, {AND, "AND"}, {NOT, "NOT"}, {LT, "LESS_THAN"}, {GT, "GREATER_THAN"}, {LSHIFT, "LEFT_SHIFT"}, {RSHIFT, "RIGHT_SHIFT"}
-)
+FSM_ACCEPT_STATES(LPAREN, RPAREN, MUL, DIV, ADD, SUB, NUM, XOR, OR, AND, NOT, LT, GT, LSHIFT, RSHIFT)
 
 FSM_TRANSITIONS(
     addIO(START, '(', LPAREN);
@@ -54,6 +35,5 @@ FSM_TRANSITIONS(
     }
 
     addIO(LT, '<', LSHIFT);
-    addIO(GT, '>', RSHIFT);
-)
+    addIO(GT, '>', RSHIFT);)
 #endif

@@ -5,9 +5,9 @@
 #include <iterator>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
-#include <string_view>
 
 using namespace std;
 
@@ -40,7 +40,7 @@ class automata
 
   public:
   template <size_t N, size_t M>
-  automata(const char (&alphabet)[N], STATES startState, const pair<STATES, string> (&tokenMap)[M])
+  automata(const char (&alphabet)[N], STATES startState, const pair<STATES, string_view> (&tokenMap)[M])
   {
     this->alphabet = unordered_set<char>(begin(alphabet), end(alphabet));
     this->startState = startState;
@@ -162,32 +162,73 @@ public:
 };
 
 template <size_t N>
-struct ALPH{
-  constexpr ALPH(const char (&alph)[N]):letters(){
+struct ALPH
+{
+  constexpr ALPH(const char (&alph)[N]) : letters()
+  {
     string_view alphV = alph;
-    for(size_t i=0; i < N-1; i++){
-      letters[i] = *(alphV.data()+i);
+    for (size_t i = 0; i < N - 1; i++)
+    {
+      letters[i] = *(alphV.data() + i);
     }
   };
-  char letters[N-1];
-  constexpr static size_t size = N-1;
+  char letters[N - 1];
+  constexpr static size_t size = N - 1;
+};
+
+constexpr size_t SPLIT(char const *str, char sep)
+{
+  std::size_t ret{1u};
+
+  while (*str)
+    if (sep == *str++)
+      ++ret;
+
+  return ret;
+}
+
+constexpr size_t LENGTH(string_view a){
+  return a.size()+1;
+}
+
+template <size_t N, size_t M,typename ENUMTYPE, const ENUMTYPE ... enums>
+struct ENUM_MAPPER
+{
+  constexpr ENUM_MAPPER(const char (&enumstr)[N]) : emap(){
+    size_t start = 0, end = 0;
+
+    str = enumstr;
+    const size_t count = sizeof...(enums);
+
+    array<ENUMTYPE,count> named_enums = {enums...};
+
+    for (size_t i = 0; i < N && end != string_view::npos; i++)
+    {
+        end = str.find_first_of(',', start);
+        emap[i].first = named_enums[i];
+        emap[i].second = string_view(str.substr(start, end - start));
+        start = end + 2;
+    }
+  };
+  string_view str;
+  pair<ENUMTYPE, string_view> emap[M];
 };
 
 #define FSM_ALPHABET(...) constexpr ALPH ALPHABET(__VA_ARGS__);
 
+#define FSM_ACCEPT_STATES(...) constexpr ENUM_MAPPER ACCEPT_NAMED_STATES = ENUM_MAPPER<LENGTH(#__VA_ARGS__), SPLIT(#__VA_ARGS__ , ','), FSM_States, __VA_ARGS__>(#__VA_ARGS__);
+
 #define FSM_START_STATE(STATE) constexpr FSM_States START_STATE = STATE;
 
-#define FSM_ACCEPT_STATES(...) const pair<FSM_States, string> ACCEPT_NAMED_STATES[] = {__VA_ARGS__};
-
-#define FSM_TRANSITIONS(code)                                                                     \
-  class FSM_automaton : public automata<FSM_States, FSM_States::META_COUNT>                       \
-  {                                                                                               \
-  protected:                                                                                      \
-    void populateTTable(){                                                                        \
-        code};                                                                                    \
-                                                                                                  \
-  public:                                                                                         \
-    FSM_automaton() : automata(ALPHABET.letters, START_STATE, ACCEPT_NAMED_STATES) { populateTTable(); }; \
+#define FSM_TRANSITIONS(code)                                                                             \
+  class FSM_automaton : public automata<FSM_States, FSM_States::META_COUNT>                               \
+  {                                                                                                       \
+protected:                                                                                                \
+    void populateTTable(){                                                                                \
+        code};                                                                                            \
+                                                                                                          \
+public:                                                                                                   \
+    FSM_automaton() : automata(ALPHABET.letters, START_STATE, ACCEPT_NAMED_STATES.emap) { populateTTable(); }; \
   };
 
 #endif
